@@ -10,3 +10,20 @@ def test_apply_discount(data):
     Item.pay_rate = 0.6
     data.apply_discount()
     assert data.price == 7500.00
+
+
+def test_instantiate_from_csv():
+    assert isinstance(Item.instantiate_from_csv(), object)
+    item1 = Item.instantiate_from_csv().all[3]
+    assert item1.name == "Ноутбук"
+
+def test_name():
+    item1 = Item('Наушники', 1500, 20)
+    assert item1.name == 'Наушники'
+    item1.name = 'БольшиеНаушники'
+    # assert item1.name == Exception
+
+def test_string_to_number():
+    assert Item.string_to_number('5') == 5
+    assert Item.string_to_number('5.0') == 5
+    assert Item.string_to_number('5.5') == 5

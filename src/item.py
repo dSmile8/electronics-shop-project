@@ -44,6 +44,7 @@ class Item:
 
         with cls.DATA_DIR.open(newline='') as csvfile:
             reader = csv.DictReader(csvfile)
+            cls.all.clear()
             for row in reader:
                 print(row['name'], row['price'], row['quantity'])
                 name = row['name']

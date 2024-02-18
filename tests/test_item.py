@@ -1,6 +1,7 @@
 """Здесь надо написать тесты с использованием pytest для модуля item."""
-from src.item import Item
+from src.item import Item, InstantiateCSVError
 from src.phone import Phone
+from pathlib import Path
 import pytest
 
 
@@ -19,7 +20,6 @@ def test_apply_discount(data):
 
 
 def test_instantiate_from_csv():
-    assert isinstance(Item.instantiate_from_csv(), object)
     item1 = Item.instantiate_from_csv().all[3]
     assert item1.name == "Мышка"
 
@@ -29,6 +29,9 @@ def test_name():
     assert item1.name == 'Наушники'
     with pytest.raises(Exception):
         item1.name = 'БольшиеНаушники'
+
+    item1.name = 'клавиатура'
+    assert item1.name == 'клавиатура'
 
 
 def test_string_to_number():
@@ -54,3 +57,15 @@ def test_add():
 
     assert item1 + item2 == 32
     assert item1 + item3 is None
+
+
+def test_errors_file_not_found():
+    Item.DATA_DIR = Path(__file__).parent.joinpath('items_not.csv')
+    with pytest.raises(FileNotFoundError):
+        Item.instantiate_from_csv()
+
+
+def test_errors_file_broken():
+    Item.DATA_DIR = Path(__file__).parent.joinpath('../src/items_broken.csv')
+    with pytest.raises(InstantiateCSVError):
+        Item.instantiate_from_csv()

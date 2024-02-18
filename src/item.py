@@ -2,6 +2,13 @@ import csv
 from pathlib import Path
 
 
+# from src.keyboard import Savelanguage
+
+
+class InstantiateCSVError(Exception):
+    pass
+
+
 class Item:
     """
     Класс для представления товара в магазине.
@@ -19,6 +26,7 @@ class Item:
         :param price: Цена за единицу товара.
         :param quantity: Количество товара в магазине.
         """
+
         self.__name = name
         self.price = price
         self.quantity = quantity
@@ -35,7 +43,6 @@ class Item:
             return other.quantity + self.quantity
         else:
             return None
-
 
     def calculate_total_price(self) -> float:
         """
@@ -54,16 +61,21 @@ class Item:
     @classmethod
     def instantiate_from_csv(cls):
         """Класс-метод, инициализирующий экземпляры класса `Item` данными из файла _src/items.csv_"""
-
-        with cls.DATA_DIR.open(newline='') as csvfile:
-            reader = csv.DictReader(csvfile)
-            cls.all.clear()
-            for row in reader:
-                print(row['name'], row['price'], row['quantity'])
-                name = row['name']
-                price = row['price']
-                quantity = row['quantity']
-                cls(name, price, quantity)
+        try:
+            with cls.DATA_DIR.open(newline='') as csvfile:
+                reader = csv.DictReader(csvfile)
+                cls.all.clear()
+                try:
+                    for row in reader:
+                        name = row['name']
+                        price = row['price']
+                        quantity = row['quantity']
+                        cls(name, price, quantity)
+                except KeyError:
+                    raise InstantiateCSVError(f'Файл {cls.DATA_DIR} поврежден')
+        except FileNotFoundError:
+            raise FileNotFoundError(f'Отсутствует файл {cls.DATA_DIR}')
+        else:
             return cls
 
     @staticmethod
